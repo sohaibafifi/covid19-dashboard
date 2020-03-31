@@ -17,9 +17,9 @@ const settings = {
 }
 
 const Map = () => {
-  const [selectedMapIdx, setSelectedMapIdx] = useState(1)
-
   const {
+    selectedMapIdx,
+    setSelectedMapIdx,
     selectedLocationReport,
     setSelectedLocation,
     isIframe,
