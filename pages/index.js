@@ -135,6 +135,13 @@ const MainPage = ({data, dates}) => {
     return {...feature.properties}
   }, [previousRegionsReport, previousDepartementsReport])
 
+  const getDROMReport = code => {
+    const items = data.filter((item => item.code === code))
+    const byCode = groupBy(items, 'code')
+
+    return reportToGeoJSON(byCode, date)
+  }
+
   useEffect(() => {
     if (selectedLocation) {
       const locationReport = getLocationReport(selectedLocation)
@@ -272,6 +279,7 @@ const MainPage = ({data, dates}) => {
           previousFranceReport,
           regionsReport,
           departementsReport,
+          getDROMReport,
           prev: dateIdx > 0 ? previousReport : null,
           next: dateIdx < dates.length - 1 ? nextReport : null,
           setViewport,
