@@ -1,6 +1,8 @@
 import React, {useContext} from 'react'
 import {StaticMap, Source, Layer} from 'react-map-gl'
 
+import {reportToGeoJSON} from '../../lib/report'
+
 import {AppContext} from '../../pages'
 
 const DOMS = [
@@ -42,7 +44,7 @@ const DOMS = [
 ]
 
 const Drom = () => {
-  const {selectedMapIdx, maps, getDROMReport} = useContext(AppContext)
+  const {date, selectedMapIdx, maps, getReport} = useContext(AppContext)
 
   return (
     <div className='drom-grid'>
@@ -60,7 +62,7 @@ const Drom = () => {
           <Source
             type='geojson'
             attribution='Données Santé publique France'
-            data={getDROMReport(code)}
+            data={reportToGeoJSON(getReport(date, code), date)}
           >
             {maps[selectedMapIdx].layers.map(layer => (
               <Layer key={layer.id} {...layer} />

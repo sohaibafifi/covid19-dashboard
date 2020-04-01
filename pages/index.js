@@ -1,10 +1,9 @@
 import React, {useState, useCallback, useEffect} from 'react'
 import {useRouter} from 'next/router'
 import PropTypes from 'prop-types'
-import {groupBy, uniq, indexOf} from 'lodash'
+import {uniq, indexOf} from 'lodash'
 
 import records from '../chiffres-cles.json'
-import centers from '../centers.json'
 
 import theme from '../styles/theme'
 
@@ -24,32 +23,10 @@ import {
 import ScreenPage from '../layouts/screen'
 import MobilePage from '../layouts/mobile'
 
+import {reportToGeoJSON} from '../lib/report'
+
 export const AppContext = React.createContext()
 export const ThemeContext = React.createContext('theme.default')
-
-const reportToGeoJSON = (report, date) => {
-  const byCode = groupBy(report.history, 'code')
-  return {
-    type: 'FeatureCollection',
-    features: Object.keys(byCode).filter(code => Boolean(centers[code])).map(code => {
-      const selectedDateAvailable = byCode[code].find(r => r.date === date)
-      const properties = selectedDateAvailable ? selectedDateAvailable : {code}
-
-      return {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: centers[code]
-        },
-        properties: {
-          ...properties,
-          ...byCode[code].find(r => r.date === date),
-          history: byCode[code].filter(r => date >= r.date)
-        }
-      }
-    }).filter(i => Boolean(i))
-  }
-}
 
 const defaultViewport = {
   latitude: 46.9,
@@ -134,13 +111,6 @@ const MainPage = ({data, dates}) => {
     const feature = report.features.find(f => f.properties.code === code)
     return {...feature.properties}
   }, [previousRegionsReport, previousDepartementsReport])
-
-  const getDROMReport = code => {
-    const items = data.filter((item => item.code === code))
-    const byCode = groupBy(items, 'code')
-
-    return reportToGeoJSON(byCode, date)
-  }
 
   useEffect(() => {
     if (selectedLocation) {
@@ -279,7 +249,7 @@ const MainPage = ({data, dates}) => {
           previousFranceReport,
           regionsReport,
           departementsReport,
-          getDROMReport,
+          getReport,
           prev: dateIdx > 0 ? previousReport : null,
           next: dateIdx < dates.length - 1 ? nextReport : null,
           setViewport,
