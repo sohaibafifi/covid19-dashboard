@@ -6,8 +6,6 @@ import {Maximize2} from 'react-feather'
 
 import {AppContext} from '../../pages'
 
-import MapSelector from '../map-selector'
-
 import Map from './map'
 import SumUp from './sumup'
 import Statistics from '../statistics'
@@ -67,9 +65,6 @@ const ReactMapGL = ({zoom, latitude, longitude}) => {
   return (
     <div className='map-container'>
       <div className='controls'>
-        <div className='control'>
-          <MapSelector mapIdx={selectedMapIdx} selectMap={setSelectedMapIdx} />
-        </div>
 
         {isIframe && (
           <div className='control maximize'>
