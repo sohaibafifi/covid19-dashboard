@@ -1,5 +1,6 @@
-import React, {useState, useCallback, useContext} from 'react'
-import ReactMapGL, {Source, Layer, Popup} from 'react-map-gl'
+import React, {useState, useContext} from 'react'
+import PropTypes from 'prop-types'
+import {Popup} from 'react-map-gl'
 import Router from 'next/router'
 import {Maximize2} from 'react-feather'
 
@@ -7,36 +8,23 @@ import {AppContext} from '../../pages'
 
 import MapSelector from '../map-selector'
 
+import Map from './map'
 import SumUp from './sumup'
 import Statistics from '../statistics'
 
 const SITE_URL = process.env.SITE_URL
 
-const settings = {
-  maxZoom: 10
-}
-
-const Map = () => {
+const ReactMapGL = ({zoom, latitude, longitude}) => {
   const {
     selectedMapIdx,
     setSelectedMapIdx,
     selectedLocationReport,
-    setSelectedLocation,
     isIframe,
-    viewport,
     maps,
-    setViewport,
     isMobileDevice
   } = useContext(AppContext)
 
-  const [map, setMap] = useState()
   const [hovered, setHovered] = useState(null)
-
-  const mapRef = useCallback(ref => {
-    if (ref) {
-      setMap(ref.getMap())
-    }
-  }, [])
 
   const onHover = event => {
     event.stopPropagation()
@@ -90,31 +78,15 @@ const Map = () => {
         )}
       </div>
 
-      <ReactMapGL
-        reuseMaps
-        ref={mapRef}
-        {...viewport}
-        width='100%'
-        height='100%'
-        mapStyle='https://etalab-tiles.fr/styles/osm-bright/style.json'
-        {...settings}
-        interactiveLayerIds={maps[selectedMapIdx].layers.map(layer => layer.id)}
-        onViewportChange={setViewport}
+      <Map
+        zoom={zoom}
+        latitude={latitude}
+        longitude={longitude}
+        data={maps[selectedMapIdx].data}
+        layers={maps[selectedMapIdx].layers}
         onHover={isMobileDevice ? null : onHover}
         onClick={onClick}
       >
-
-        <Source
-          type='geojson'
-          id='cas-confirmes'
-          attribution='Données Santé publique France'
-          data={maps[selectedMapIdx].data}
-        >
-          {maps[selectedMapIdx].layers.map(layer => (
-            <Layer key={layer.id} {...layer} />
-          ))}
-        </Source>
-
         {hovered && (
           <Popup
             longitude={hovered.longitude}
@@ -127,7 +99,7 @@ const Map = () => {
             <SumUp nom={hovered.feature.properties.nom} />
           </Popup>
         )}
-      </ReactMapGL>
+      </Map>
 
       {isMobileDevice && (
         <div className={`mobile-sumup ${selectedLocationReport ? 'show' : 'hide'}`}>
@@ -196,4 +168,10 @@ const Map = () => {
   )
 }
 
-export default Map
+ReactMapGL.propTypes = {
+  latitude: PropTypes.number.isRequired,
+  longitude: PropTypes.number.isRequired,
+  zoom: PropTypes.number.isRequired
+}
+
+export default ReactMapGL

@@ -28,12 +28,6 @@ import {reportToGeoJSON} from '../lib/report'
 export const AppContext = React.createContext()
 export const ThemeContext = React.createContext('theme.default')
 
-const defaultViewport = {
-  latitude: 46.9,
-  longitude: 1.7,
-  zoom: 4.5
-}
-
 const MainPage = ({data, dates}) => {
   const router = useRouter()
 
@@ -50,7 +44,6 @@ const MainPage = ({data, dates}) => {
   const [previousRegionsReport, setPreviousRegionsReport] = useState({})
   const [departementsReport, setDepartementsReport] = useState({})
   const [previousDepartementsReport, setPreviousDepartementsReport] = useState({})
-  const [viewport, setViewport] = useState(defaultViewport)
   const [selectedMapIdx, setSelectedMapIdx] = useState(1)
 
   const dateIdx = indexOf(dates, date)
@@ -123,15 +116,6 @@ const MainPage = ({data, dates}) => {
       setSelectedPreviousLocationReport(null)
     }
   }, [selectedLocation, getLocationReport, getPreviousLocationReport])
-
-  useEffect(() => {
-    const {latitude, longitude} = viewport
-    setViewport({
-      latitude,
-      longitude,
-      zoom: isMobileDevice ? 4.3 : defaultViewport.zoom
-    })
-  }, [isMobileDevice]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const {iframe, location} = router.query
@@ -252,11 +236,9 @@ const MainPage = ({data, dates}) => {
           getReport,
           prev: dateIdx > 0 ? previousReport : null,
           next: dateIdx < dates.length - 1 ? nextReport : null,
-          setViewport,
           maps,
           selectedMapIdx,
           setSelectedMapIdx,
-          viewport,
           isIframe,
           isMobileDevice,
           isTouchScreenDevice
