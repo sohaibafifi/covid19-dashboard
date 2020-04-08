@@ -12,10 +12,9 @@ import Statistics from '../statistics'
 
 const SITE_URL = process.env.SITE_URL
 
-const ReactMapGL = ({zoom, latitude, longitude}) => {
+const ReactMapGL = ({zoom, latitude, longitude, hidePopup}) => {
   const {
     selectedMapIdx,
-    setSelectedMapIdx,
     selectedLocationReport,
     isIframe,
     maps,
@@ -82,7 +81,7 @@ const ReactMapGL = ({zoom, latitude, longitude}) => {
         onHover={isMobileDevice ? null : onHover}
         onClick={onClick}
       >
-        {hovered && (
+        {hovered && !hidePopup && (
           <Popup
             longitude={hovered.longitude}
             latitude={hovered.latitude}
@@ -163,10 +162,15 @@ const ReactMapGL = ({zoom, latitude, longitude}) => {
   )
 }
 
+ReactMapGL.defaultProps = {
+  hidePopup: false
+}
+
 ReactMapGL.propTypes = {
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
-  zoom: PropTypes.number.isRequired
+  zoom: PropTypes.number.isRequired,
+  hidePopup: PropTypes.bool
 }
 
 export default ReactMapGL
